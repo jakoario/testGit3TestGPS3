@@ -15,14 +15,12 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
-    lateinit var sw_metric : SwitchCompat
     lateinit var tv_speed: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sw_metric = findViewById(R.id.sw_metric)
         tv_speed = findViewById(R.id.tv_speed)
 
         // check for gps permission
@@ -37,18 +35,15 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
         this.updateSpeed(null)
 
-        sw_metric.setOnCheckedChangeListener { buttonView, isChecked ->
-            this.updateSpeed(null)
-        }
-
     }
 
     override fun onLocationChanged(location: Location) {
         if (location != null) run {
-            val myLocation = CLocation(location, this.useMetricUnits())
+            val myLocation = CLocation(location)
             this.updateSpeed(myLocation)
         }
     }
+
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
 
     }
@@ -91,7 +86,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
         var nCurrentSpeed: Float = 0F
 
         if (location != null) {
-            location.setUseMetricUnits(this.useMetricUnits())
             nCurrentSpeed = location.speed
         }
         val fmt = Formatter(StringBuilder())
@@ -99,16 +93,10 @@ class MainActivity : AppCompatActivity(), LocationListener {
         var strCurrentSpeed: String = fmt.toString()
         strCurrentSpeed = strCurrentSpeed.replace(" ", "0")
 
-        if (this.useMetricUnits()) {
-            tv_speed.text = strCurrentSpeed + " km/h"
-        } else {
-            tv_speed.text = strCurrentSpeed + " miles/h"
-        }
+        tv_speed.text = strCurrentSpeed + " km/h"
+
     }
 
-    private fun useMetricUnits(): Boolean {
-        return sw_metric.isChecked
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
